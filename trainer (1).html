@@ -1,0 +1,232 @@
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тренажёр «Пределы»</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Tahoma,sans-serif}
+  body{min-height:100vh;background:linear-gradient(135deg,#1e3c72,#2a5298);display:flex;align-items:flex-start;justify-content:center;padding:16px}
+  .card{background:#fff;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.35);max-width:600px;width:100%;padding:28px}
+  h1{font-size:22px;color:#1e3c72;margin-bottom:6px}
+  h2{font-size:17px;color:#444;margin-bottom:14px}
+  .muted{color:#777;font-size:13px}
+  input[type=text],input[type=password]{width:100%;padding:12px;border:2px solid #cfd8e3;border-radius:10px;font-size:16px;margin:10px 0}
+  input:focus{outline:none;border-color:#2a5298}
+  button{width:100%;padding:13px;border:none;border-radius:10px;background:#2a5298;color:#fff;font-size:16px;cursor:pointer;font-weight:600}
+  button:hover{background:#1e3c72}
+  .task{font-size:20px;text-align:center;margin:18px 0;padding:16px;background:#f0f4fa;border-radius:12px}
+  .bar{height:8px;background:#e3e9f2;border-radius:4px;margin:12px 0;overflow:hidden}
+  .bar>div{height:100%;background:linear-gradient(90deg,#43a047,#2a5298);width:0;transition:width .3s}
+  .stats{display:flex;justify-content:space-between;font-size:13px;color:#555;margin-bottom:6px}
+  .fb{border-radius:10px;padding:12px;margin-top:14px;font-size:15px}
+  .ok{background:#e8f5e9;color:#2e7d32}.bad{background:#ffebee;color:#c62828}
+  .res{display:flex;justify-content:space-around;text-align:center;margin:16px 0}
+  .res b{font-size:30px;color:#1e3c72;display:block}
+  table{width:100%;border-collapse:collapse;margin-top:14px;font-size:14px}
+  td,th{border:1px solid #dde3ec;padding:7px;text-align:center}
+  th{background:#eef2f8}
+  .row{display:flex;gap:10px}.row button{flex:1}
+  .err{color:#c62828;font-size:13px;min-height:18px}
+  /* вкладки */
+  .tabs{display:flex;gap:8px;margin-bottom:18px}
+  .tabs button{background:#e3e9f2;color:#1e3c72;padding:10px;border-radius:10px;font-size:14px}
+  .tabs button.active{background:#2a5298;color:#fff}
+  .q{padding:14px;border:1px solid #dde3ec;border-radius:12px;margin-bottom:14px}
+  .q .qt{font-size:16px;margin-bottom:8px}
+  .q label{display:block;font-size:15px;padding:6px 8px;border-radius:8px;cursor:pointer}
+  .q label:hover{background:#f0f4fa}
+  .q input[type=radio]{margin-right:8px}
+  .q.good{border-color:#43a047;background:#f4faf4}
+  .q.wrong{border-color:#e53935;background:#fff5f5}
+  .small{font-size:13px;color:#666;margin-top:4px}
+</style>
+<base target="_blank">
+</head>
+<body>
+<div class="card" id="app"></div>
+<script>
+const PASS = "предел2026";
+const app = document.getElementById('app');
+let tab = 'trainer';
+let quiz = [], idx = 0, score = 0, timer = null, secs = 0;
+
+/* ---------- ТРЕНАЖЁР (случайные задания) ---------- */
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function task(){
+  const t = rnd(1,5); let q,a,hint;   // все ответы — целые числа
+  if(t===1){ const n=rnd(2,9); q=`lim (x² − ${n*n}) / (x − ${n}),  x→${n}`; a=2*n; hint:"Разложите числитель на множители."; }
+  else if(t===2){ const k=rnd(2,6); q=`lim sin(${k}x) / x,  x→0`; a=k; hint:"Первый замечательный предел."; }
+  else if(t===3){ const n=rnd(2,5); q=`lim (x³ − ${n**3}) / (x − ${n}),  x→${n}`; a=3*n*n; hint:"x³−a³=(x−a)(x²+ax+a²)."; }
+  else if(t===4){ const n=rnd(2,4); q=`lim (x⁴ − ${n**4}) / (x − ${n}),  x→${n}`; a=4*n**3; hint:"x⁴−a⁴=(x−a)(x³+ax²+a²x+a³)."; }
+  else { const r=rnd(1,5),q2=rnd(r+1,r+6); q=`lim (x² − ${r+q2}x + ${r*q2}) / (x − ${r}),  x→${r}`; a=r-q2; hint:"Разложите трёхчлен на множители."; }
+  return {q,a,hint};
+}
+function gen(){ quiz=[]; for(let i=0;i<8;i++) quiz.push(task()); }
+function fmt(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+
+/* ---------- ТЕСТ «Тестирование 28.10» ---------- */
+const TESTS = {
+1:{
+ practice:[
+  {q:"lim (x² − 9) / (x − 3),  x→3", a:6,  hint:"(x−3)(x+3)"},
+  {q:"lim sin(4x) / x,  x→0", a:4, hint:"Первый замечательный предел"},
+  {q:"lim (x³ − 8) / (x − 2),  x→2", a:12, hint:"x³−a³=(x−a)(x²+ax+a²)"},
+  {q:"lim (x² − 5x + 6) / (x − 2),  x→2", a:-1, hint:"(x−2)(x−3)"},
+  {q:"lim (x⁴ − 1) / (x − 1),  x→1", a:4, hint:"x⁴−a⁴=(x−a)(x³+ax²+a²x+a³)"}],
+ theory:[
+  {q:"Что означает запись lim f(x) = A при x→a?",
+   opts:["Значение f(a) равно A","При приближении x к a значения f(x) сколь угодно близки к A","Функция обращается в нуль в точке a","Производная f(x) в точке a равна A"],
+   correct:1, expl:"Предел описывает поведение функции ВБЛИЗИ точки, а не значение в самой точке."},
+  {q:"Чему равен первый замечательный предел lim (sin x)/x при x→0?",
+   opts:["0","1","∞","e"],
+   correct:1, expl:"lim sin x / x = 1 при x→0."},
+  {q:"Какая неопределённость возникает при подстановке x = a в выражение (x² − a²)/(x − a)?",
+   opts:["∞/∞","0·∞","0/0","∞ − ∞"],
+   correct:2, expl:"Числитель и знаменатель обращаются в нуль — нужно раскрыть неопределённость."},
+  {q:"Чему равен второй замечательный предел lim (1 + 1/x)^x при x→∞?",
+   opts:["1","0","e","π"],
+   correct:2, expl:"lim (1 + 1/x)^x = e ≈ 2,718."},
+  {q:"Если lim f(x) = ∞ и lim g(x) = 2 при x→a, то lim (f(x) + g(x)) равен:",
+   opts:["2","∞","0","не существует"],
+   correct:1, expl:"Константа не влияет на бесконечность: ∞ + 2 = ∞."}]
+},
+2:{
+ practice:[
+  {q:"lim (x² − 16) / (x − 4),  x→4", a:8, hint:"(x−4)(x+4)"},
+  {q:"lim sin(5x) / x,  x→0", a:5, hint:"Первый замечательный предел"},
+  {q:"lim (x³ − 27) / (x − 3),  x→3", a:27, hint:"x³−a³=(x−a)(x²+ax+a²)"},
+  {q:"lim (x² − 7x + 12) / (x − 4),  x→4", a:1, hint:"(x−4)(x−3)"},
+  {q:"lim (x⁴ − 16) / (x − 2),  x→2", a:32, hint:"x⁴−a⁴=(x−a)(x³+ax²+a²x+a³)"}],
+ theory:[
+  {q:"Чему равен предел постоянной: lim C при x→a?",
+   opts:["0","C","∞","a"],
+   correct:1, expl:"Предел константы равен самой константе."},
+  {q:"Чему равен предел lim (1 + α)^(1/α) при α→0?",
+   opts:["1","0","e","∞"],
+   correct:2, expl:"Это вторая замечательный предел в другой форме: равен e."},
+  {q:"Предел суммы двух функций равен:",
+   opts:["Произведению пределов","Сумме пределов (если они существуют)","Частному пределов","Разности пределов"],
+   correct:1, expl:"lim(f + g) = lim f + lim g, если оба предела существуют."},
+  {q:"Чему равен lim cos x при x→0?",
+   opts:["0","1","π/2","∞"],
+   correct:1, expl:"cos 0 = 1, функция непрерывна в нуле."},
+  {q:"Предел отношения приращения функции к приращению аргумента при Δx→0 называется:",
+   opts:["Пределом функции","Интегралом","Производной","Суммой ряда"],
+   correct:2, expl:"Это определение производной: f′(x) = lim Δy/Δx при Δx→0."}]
+}};
+
+function showTest(variant){
+  const T = TESTS[variant];
+  let html = tabsHtml() + '<h2>Вариант '+variant+' — 5 задач по практике и 5 по теории</h2>';
+  T.practice.forEach((p,i)=>{
+    html += '<div class="q"><div class="qt"><b>Задача '+(i+1)+'.</b> '+p.q+'</div>'+
+      '<input type="text" id="p'+i+'" placeholder="Ответ (целое число)"></div>';
+  });
+  T.theory.forEach((t,i)=>{
+    html += '<div class="q"><div class="qt"><b>Вопрос '+(i+1)+'.</b> '+t.q+'</div>'+
+      t.opts.map((o,j)=>'<label><input type="radio" name="t'+i+'" value="'+j+'">'+o+'</label>').join('')+'</div>';
+  });
+  html += '<button onclick="checkTest('+variant+')">Проверить тест</button><div class="err" id="e"></div>';
+  app.innerHTML = html;
+}
+function checkTest(variant){
+  const T = TESTS[variant]; let score = 0;
+  for(let i=0;i<5;i++){
+    const inp = document.getElementById('p'+i);
+    const v = parseFloat(String(inp.value).replace(',','.'));
+    inp.closest('.q').classList.add(!isNaN(v)&&Math.abs(v-T.practice[i].a)<0.01 ? 'good' : 'wrong');
+    if(!isNaN(v)&&Math.abs(v-T.practice[i].a)<0.01) score++;
+  }
+  for(let i=0;i<5;i++){
+    const sel = document.querySelector('input[name=t'+i+']:checked');
+    const ok = sel && parseInt(sel.value)===T.theory[i].correct;
+    sel ? sel.closest('.q').classList.add(ok?'good':'wrong')
+        : document.getElementsByName('t'+i)[0].closest('.q').classList.add('wrong');
+    if(ok) score++;
+  }
+  const p = score*10;
+  const grade = p>=90?'5 (отлично)':p>=70?'4 (хорошо)':p>=50?'3 (удовл.)':'2 (плохо)';
+  document.getElementById('e').innerHTML =
+    '<div class="fb '+(p>=50?'ok':'bad')+'" style="text-align:center">Результат: <b>'+score+' из 10</b> · '+p+'% · Оценка: <b>'+grade+'</b></div>';
+  const hist = JSON.parse(localStorage.getItem('lim_test')||'[]');
+  hist.push({d:new Date().toLocaleString('ru-RU'), v:variant, s:score, p:p});
+  localStorage.setItem('lim_test', JSON.stringify(hist));
+  window.scrollTo(0,0);
+}
+function testHome(){
+  app.innerHTML = tabsHtml() +
+   '<h2>Тестирование 28.10</h2><p class="muted" style="margin-bottom:16px">Выберите вариант. В каждом: 5 задач на вычисление пределов и 5 вопросов по теории.</p>'+
+   '<div class="row"><button onclick="showTest(1)">Вариант 1</button><button onclick="showTest(2)">Вариант 2</button></div>';
+}
+
+/* ---------- ВКЛАДКИ ---------- */
+function tabsHtml(){
+  return '<div class="tabs"><button class="'+(tab==='trainer'?'active':'')+'" onclick="switchTab(\'trainer\')">Тренажёр</button>'+
+         '<button class="'+(tab==='test'?'active':'')+'" onclick="switchTab(\'test\')">Тестирование 28.10</button></div>';
+}
+function switchTab(t){
+  tab = t;
+  if(t==='trainer'){ gen(); idx=0; score=0; secs=0;
+    timer=setInterval(()=>{secs++; const s=document.getElementById('tm'); if(s) s.textContent=fmt(secs)},1000);
+    showTask();
+  } else { clearInterval(timer); testHome(); }
+}
+
+/* ---------- ЛОГИН ---------- */
+function showLogin(){
+  app.innerHTML = `<h1>🧮 Тренажёр «Пределы»</h1>
+  <h2>Тема: вычисление пределов функций</h2>
+  <p class="muted">Для доступа введите пароль, полученный от преподавателя (предел2026)</p>
+  <input type="password" id="pw" placeholder="Пароль">
+  <div class="err" id="e"></div>
+  <button onclick="login()">Войти</button>
+  <p class="muted" style="margin-top:14px">Вкладка «Тренажёр» — 8 случайных заданий · вкладка «Тестирование 28.10» — контрольный тест, 2 варианта</p>`;
+}
+function login(){
+  if(document.getElementById('pw').value.trim().toLowerCase()===PASS){ switchTab('trainer'); }
+  else document.getElementById('e').textContent='Неверный пароль. Попробуйте ещё раз.';
+}
+
+/* ---------- ЭКРАНЫ ТРЕНАЖЁРА ---------- */
+function showTask(){
+  const t=quiz[idx];
+  app.innerHTML=tabsHtml()+`<div class="stats"><span>Задание ${idx+1} из ${quiz.length}</span>
+    <span>Верно: ${score}</span><span>⏱ <span id="tm">${fmt(secs)}</span></span></div>
+    <div class="bar"><div style="width:${idx/quiz.length*100}%"></div></div>
+    <h2 style="margin-top:10px">Вычислите предел (ответ — целое число):</h2>
+    <div class="task">${t.q}</div>
+    <input type="text" id="ans" placeholder="Ответ" autocomplete="off">
+    <div class="err" id="e"></div>
+    <button onclick="check()">Проверить</button>`;
+}
+function check(){
+  const v=parseFloat(String(document.getElementById('ans').value).replace(',','.'));
+  const t=quiz[idx];
+  if(isNaN(v)){document.getElementById('e').textContent='Введите число.';return}
+  const ok=Math.abs(v-t.a)<0.01;
+  if(ok)score++;
+  app.innerHTML=tabsHtml()+`<div class="task">${t.q}</div>
+    <div class="fb ${ok?'ok':'bad'}">${ok?'✅ Верно!':'❌ Неверно. '+t.hint+' Ответ: '+t.a}</div>
+    <button onclick="next()">${idx+1<quiz.length?'Следующее задание →':'Показать результат'}</button>`;
+}
+function next(){ idx++; if(idx<quiz.length)showTask(); else finish(); }
+function finish(){
+  clearInterval(timer);
+  const p=Math.round(score/quiz.length*100);
+  const grade=p>=90?'5 (отлично)':p>=70?'4 (хорошо)':p>=50?'3 (удовл.)':'2 (плохо)';
+  const hist=JSON.parse(localStorage.getItem('lim_hist')||'[]');
+  hist.push({d:new Date().toLocaleString('ru-RU'),s:score,n:quiz.length,p,t:fmt(secs)});
+  localStorage.setItem('lim_hist',JSON.stringify(hist));
+  app.innerHTML=tabsHtml()+`<h1>Результат</h1>
+    <div class="res"><div><b>${score}/${quiz.length}</b><span class="muted">баллов</span></div>
+    <div><b>${p}%</b><span class="muted">точность</span></div>
+    <div><b>${fmt(secs)}</b><span class="muted">время</span></div></div>
+    <div class="fb ${p>=50?'ok':'bad'}" style="text-align:center">Оценка: <b>${grade}</b></div>
+    <div class="row" style="margin-top:14px">
+      <button onclick="switchTab('trainer')">🔄 Ещё раз</button>
+      <button onclick="showTest(1)" style="background:#607d8b">К тесту</button></div>`;
+}
+showLogin();
+</script>
+</body>
+</html>
