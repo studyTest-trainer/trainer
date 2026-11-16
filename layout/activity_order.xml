@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="48dp">
+
+        <!-- Верхняя волна -->
+        <ImageView
+            android:id="@+id/ivTopWave"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/bg_wave_pink2"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Логотип на волне -->
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="100dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/img_logo_glass"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Заголовок -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:fontFamily="serif"
+            android:text="ОФОРМЛЕНИЕ ЗАКАЗА"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivTopWave" />
+
+        <TextView
+            android:id="@+id/tvSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Заполните форму и оплатите заказ"
+            android:textColor="@color/text_muted"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+
+        <!-- ПОЛЯ ВВОДА -->
+        <EditText
+            android:id="@+id/etFirstName"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/bg_pill"
+            android:elevation="4dp"
+            android:hint="ВАШЕ ИМЯ"
+            android:inputType="textPersonName"
+            android:paddingHorizontal="20dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/text_muted"
+            android:textSize="12sp"
+            app:layout_constraintTop_toBottomOf="@id/tvSubtitle" />
+
+        <EditText
+            android:id="@+id/etLastName"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_pill"
+            android:elevation="4dp"
+            android:hint="ВАША ФАМИЛИЯ"
+            android:inputType="textPersonName"
+            android:paddingHorizontal="20dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/text_muted"
+            android:textSize="12sp"
+            app:layout_constraintTop_toBottomOf="@id/etFirstName" />
+
+        <EditText
+            android:id="@+id/etPhone"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_pill"
+            android:elevation="4dp"
+            android:hint="ВАШ НОМЕР ТЕЛЕФОНА"
+            android:inputType="phone"
+            android:paddingHorizontal="20dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/text_muted"
+            android:textSize="12sp"
+            app:layout_constraintTop_toBottomOf="@id/etLastName" />
+
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_pill"
+            android:elevation="4dp"
+            android:hint="ВАША ПОЧТА ДЛЯ ОТПРАВКИ ЧЕКА ОПЛАТЫ"
+            android:inputType="textEmailAddress"
+            android:paddingHorizontal="20dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/text_muted"
+            android:textSize="10sp"
+            app:layout_constraintTop_toBottomOf="@id/etPhone" />
+
+        <EditText
+            android:id="@+id/etAddress"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_pill"
+            android:elevation="4dp"
+            android:hint="АДРЕС ДОСТАВКИ"
+            android:inputType="textPostalAddress"
+            android:paddingHorizontal="20dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/text_muted"
+            android:textSize="12sp"
+            app:layout_constraintTop_toBottomOf="@id/etEmail" />
+
+        <!-- БЛОК ОПЛАТЫ -->
+        <TextView
+            android:id="@+id/tvPaymentTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:text="Выберите способ оплаты"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etAddress" />
+
+        <!-- ВСЕ РАДИОКНОПКИ ВНУТРИ ГРУППЫ -->
+        <RadioGroup
+            android:id="@+id/rgPayment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvPaymentTitle">
+
+            <RadioButton
+                android:id="@+id/rbCash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/pink"
+                android:checked="true"
+                android:text="Наличными"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+
+            <RadioButton
+                android:id="@+id/rbCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/pink"
+                android:text="Картой"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+        </RadioGroup>
+
+        <!-- Визуал карты справа -->
+        <LinearLayout
+            android:id="@+id/llCardDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:gravity="end"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="@id/rgPayment"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- Исправил ID картинки карты, чтобы не было дубликата -->
+            <ImageView
+                android:id="@+id/ivCardImage"
+                android:layout_width="38dp"
+                android:layout_height="30dp"
+                android:layout_gravity="end"
+                android:scaleType="centerCrop"
+                android:src="@drawable/cart" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="**** 6789"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Изменить"
+                android:textColor="@color/pink"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- КНОПКА ОПЛАТИТЬ -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnPay"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="40dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/bg_button_outline_pink"
+            android:backgroundTint="@null"
+            android:elevation="8dp"
+            android:stateListAnimator="@null"
+            android:text="Оплатить"
+            android:textColor="@color/pink"
+            android:textSize="18sp"
+            app:backgroundTint="@null"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rgPayment" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
